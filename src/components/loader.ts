@@ -96,7 +96,7 @@ function buildComponentsDeclarations(target: string, views: ComponentsMap) {
   lines.push(`  import { Plugin } from 'vue';`);
   lines.push(`  export const Storefront: Plugin;`);
   lines.push(``);
-  views.forEach((resolved) => lines.push(`  export { default as ${resolved.name} } from '${path.relative(directory, resolved.path)}';`));
+  views.forEach((resolved) => lines.push(`  export { default as ${resolved.name} } from '${normalizePath(path.relative(directory, resolved.path))}';`));
   lines.push(`}`);
 
   fs.writeFileSync(declarations, lines.join('\n'));
@@ -114,7 +114,7 @@ function buildVueDeclarations(target: string, views: ComponentsMap) {
   lines.push(``);
   lines.push(`declare module '@vue/runtime-core' {`);
   lines.push(`  export interface GlobalComponents {`);
-  views.forEach((resolved) => lines.push(`    ${resolved.name}: typeof import('${path.relative(directory, resolved.path)}')['default'],`));
+  views.forEach((resolved) => lines.push(`    ${resolved.name}: typeof import('${normalizePath(path.relative(directory, resolved.path))}')['default'],`));
   lines.push(`  }`);
   lines.push(`}`);
 
