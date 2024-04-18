@@ -1,4 +1,4 @@
-import { ResolvedConfig } from 'vite';
+import { ResolvedConfig, normalizePath } from 'vite';
 import path from 'node:path';
 import fs from 'node:fs';
 import { scan } from '../utils/scanner';
@@ -52,8 +52,8 @@ function resolveComponents(config: ResolvedConfig, options: Options, views: Comp
     scan(vendor).forEach((path) => {
       let name = asGlobalComponent(path);
 
-      views.set(name, { name, path, vendor: true });
-      vendors.set(name, { name, path, vendor: true });
+      views.set(name, { name, path: normalizePath(path), vendor: true });
+      vendors.set(name, { name, path: normalizePath(path), vendor: true });
     });
   }
 
@@ -62,7 +62,7 @@ function resolveComponents(config: ResolvedConfig, options: Options, views: Comp
     scan(local).forEach((path) => {
       let name = asGlobalComponent(path);
 
-      views.set(name, { name, path, vendor: false });
+      views.set(name, { name, path: normalizePath(path), vendor: false });
     });
   }
 }

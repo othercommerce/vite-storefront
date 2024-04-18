@@ -1,4 +1,4 @@
-import { ResolvedConfig } from 'vite';
+import { ResolvedConfig, normalizePath } from 'vite';
 import path from 'node:path';
 import fs from 'node:fs';
 import { asLaravel, asComponent } from '../utils/names';
@@ -18,8 +18,8 @@ export function loadViewsModule(config: ResolvedConfig, options: Options, compil
   let views: View[] = [];
   let lines: string[] = [];
 
-  scan(vendor).forEach((path) => views.push({ laravel: asLaravel(vendor, path), name: asComponent(vendor, path), path }));
-  scan(local).forEach((path) => views.push({ laravel: asLaravel(local, path), name: asComponent(local, path), path }));
+  scan(vendor).forEach((path) => views.push({ laravel: asLaravel(vendor, path), name: asComponent(vendor, path), path: normalizePath(path) }));
+  scan(local).forEach((path) => views.push({ laravel: asLaravel(local, path), name: asComponent(local, path), path: normalizePath(path) }));
 
   buildViewsDeclarations(path.resolve(config.root, options.vendor));
   buildViewsDeclarations(path.resolve(config.root, options.local));
