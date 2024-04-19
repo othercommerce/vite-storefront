@@ -16,8 +16,6 @@ export default function storefront(props?: Partial<Options>): Plugin {
   let options: Options = { ...defaults, ...props };
   let config: ResolvedConfig;
 
-  let SHOULD_INVALIDATE = false;
-
   function refreshDeclarations(config: ResolvedConfig, options: Options, server: ViteDevServer) {
     loadComponentsModule(config, options, false);
     loadViewsModule(config, options, false);
@@ -32,8 +30,6 @@ export default function storefront(props?: Partial<Options>): Plugin {
     if (viewsModule) {
       server.reloadModule(viewsModule);
     }
-
-    SHOULD_INVALIDATE = true;
   }
 
   return {
@@ -51,13 +47,6 @@ export default function storefront(props?: Partial<Options>): Plugin {
     load(id) {
       if (id === '\0$components') return loadComponentsModule(config, options);
       if (id === '\0$views') return loadViewsModule(config, options);
-    },
-
-    async handleHotUpdate() {
-      if (SHOULD_INVALIDATE) {
-        SHOULD_INVALIDATE = false;
-        return [];
-      }
     },
 
     configureServer(server) {
