@@ -1,4 +1,4 @@
-import type { Plugin, ResolvedConfig, UpdatePayload, ViteDevServer } from 'vite';
+import type { Plugin, ResolvedConfig, ViteDevServer } from 'vite';
 import { loadViewsModule } from './views/loader';
 import { loadComponentsModule } from './components/loader';
 
@@ -12,9 +12,29 @@ const defaults: Options = {
   vendor: 'vendor/procommerce/framework/packages/storefront/src',
 };
 
-export default function storefront(props: Partial<Options>): Plugin {
+export default function storefront(props?: Partial<Options>): Plugin {
   let options: Options = { ...defaults, ...props };
   let config: ResolvedConfig;
+
+  let SHOULD_INVALIDATE = false;
+
+  function refreshDeclarations(config: ResolvedConfig, options: Options, server: ViteDevServer) {
+    loadComponentsModule(config, options, false);
+    loadViewsModule(config, options, false);
+
+    const componentsModule = server.moduleGraph.getModuleById('\0$components');
+    const viewsModule = server.moduleGraph.getModuleById('\0$views');
+
+    if (componentsModule) {
+      server.reloadModule(componentsModule);
+    }
+
+    if (viewsModule) {
+      server.reloadModule(viewsModule);
+    }
+
+    SHOULD_INVALIDATE = true;
+  }
 
   return {
     name: 'storefront',
@@ -24,46 +44,35 @@ export default function storefront(props: Partial<Options>): Plugin {
     },
 
     resolveId(id) {
-      if (id === '$components') {
-        return '$components';
-      }
-
-      if (id === '$views') {
-        return '$views';
-      }
+      if (id === '$components') return '\0$components';
+      if (id === '$views') return '\0$views';
     },
 
     load(id) {
-      if (id === '$components') {
-        return loadComponentsModule(config, options);
-      }
+      if (id === '\0$components') return loadComponentsModule(config, options);
+      if (id === '\0$views') return loadViewsModule(config, options);
+    },
 
-      if (id === '$views') {
-        return loadViewsModule(config, options);
+    async handleHotUpdate() {
+      if (SHOULD_INVALIDATE) {
+        SHOULD_INVALIDATE = false;
+        return [];
       }
     },
 
     configureServer(server) {
-      server.watcher.on('add', (path) => refreshDeclarations(config, options, server, path));
-      server.watcher.on('unlink', (path) => refreshDeclarations(config, options, server, path));
+      const handler = (path: string) => {
+        if (path.endsWith('.vue')) {
+          refreshDeclarations(config, options, server);
+        }
+      };
+
+      server.watcher.on('add', handler);
+      server.watcher.on('unlink', handler);
+      server.watcher.on('addDir', handler);
+      server.watcher.on('unlinkDir', handler);
     },
   };
-}
-
-function refreshDeclarations(config: ResolvedConfig, options: Options, server: ViteDevServer, path: string) {
-  loadComponentsModule(config, options, false);
-  loadViewsModule(config, options, false);
-
-  const timestamp = +new Date();
-
-  const payload: UpdatePayload = {
-    type: 'update',
-    updates: [
-      { acceptedPath: path, path: path, timestamp, type: 'js-update' },
-    ],
-  };
-
-  server.hot.send(payload);
 }
 
 
