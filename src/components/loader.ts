@@ -52,8 +52,10 @@ function resolveComponents(config: ResolvedConfig, options: Options, views: Comp
     scan(vendor).forEach((path) => {
       let name = asGlobalComponent(path);
 
-      views.set(name, { name, path: normalizePath(path), vendor: true });
-      vendors.set(name, { name, path: normalizePath(path), vendor: true });
+      path = normalizePath(path);
+
+      views.set(name, { name, path, vendor: true });
+      vendors.set(name, { name, path, vendor: true });
     });
   }
 
@@ -62,7 +64,9 @@ function resolveComponents(config: ResolvedConfig, options: Options, views: Comp
     scan(local).forEach((path) => {
       let name = asGlobalComponent(path);
 
-      views.set(name, { name, path: normalizePath(path), vendor: false });
+      path = normalizePath(path);
+
+      views.set(name, { name, path, vendor: false });
     });
   }
 }

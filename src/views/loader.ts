@@ -15,11 +15,26 @@ export function loadViewsModule(config: ResolvedConfig, options: Options, compil
   let local = path.resolve(config.root, options.local, 'Views');
   let vendor = path.resolve(config.root, options.vendor, 'Views');
 
-  let views: View[] = [];
+  let views: Map<string, View> = new Map;
   let lines: string[] = [];
 
-  scan(vendor).forEach((path) => views.push({ laravel: asLaravel(vendor, path), name: asComponent(vendor, path), path: normalizePath(path) }));
-  scan(local).forEach((path) => views.push({ laravel: asLaravel(local, path), name: asComponent(local, path), path: normalizePath(path) }));
+  scan(vendor).forEach((path) => {
+    let name = asComponent(vendor, path);
+    let laravel = asLaravel(vendor, path);
+
+    path = normalizePath(path);
+
+    views.set(name, { laravel, name, path });
+  });
+
+  scan(local).forEach((path) => {
+    let name = asComponent(vendor, path);
+    let laravel = asLaravel(vendor, path);
+
+    path = normalizePath(path);
+
+    views.set(name, { laravel, name, path });
+  });
 
   buildViewsDeclarations(path.resolve(config.root, options.vendor));
   buildViewsDeclarations(path.resolve(config.root, options.local));
@@ -28,9 +43,9 @@ export function loadViewsModule(config: ResolvedConfig, options: Options, compil
     return null;
   }
 
-  lines.push(...views.map((resolved) => `import ${resolved.name} from '${resolved.path}';`));
+  views.forEach((resolved) => lines.push(`import ${resolved.name} from '${resolved.path}';`));
   lines.push(`export const Views = {`);
-  lines.push(...views.map((resolved) => `  '${resolved.laravel}': ${resolved.name},`));
+  views.forEach((resolved) => lines.push(`  '${resolved.laravel}': ${resolved.name},`));
   lines.push(`};`);
 
   return lines.join('\n');
