@@ -59,7 +59,6 @@ function resolveComponents(config: ResolvedConfig, options: Options, views: Comp
     });
   }
 
-
   if (fs.existsSync(local)) {
     scan(local).forEach((path) => {
       let name = asGlobalComponent(path);

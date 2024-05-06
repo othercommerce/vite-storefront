@@ -28,8 +28,8 @@ export function loadViewsModule(config: ResolvedConfig, options: Options, compil
   });
 
   scan(local).forEach((path) => {
-    let name = asComponent(vendor, path);
-    let laravel = asLaravel(vendor, path);
+    let name = asComponent(local, path);
+    let laravel = asLaravel(local, path);
 
     path = normalizePath(path);
 
