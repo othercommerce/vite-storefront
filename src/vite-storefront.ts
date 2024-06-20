@@ -1,6 +1,7 @@
 import type { Plugin, ResolvedConfig, ViteDevServer } from 'vite';
 import { loadViewsModule } from './views/loader';
 import { loadComponentsModule } from './components/loader';
+import { loadFeaturesModule } from './features/loader';
 
 export type Options = {
   local: string;
@@ -19,9 +20,11 @@ export default function storefront(props?: Partial<Options>): Plugin {
   function refreshDeclarations(config: ResolvedConfig, options: Options, server: ViteDevServer) {
     loadComponentsModule(config, options, false);
     loadViewsModule(config, options, false);
+    loadFeaturesModule(config, options, false);
 
     const componentsModule = server.moduleGraph.getModuleById('\0$components');
     const viewsModule = server.moduleGraph.getModuleById('\0$views');
+    const featuresModule = server.moduleGraph.getModuleById('\0$features');
 
     if (componentsModule) {
       server.reloadModule(componentsModule);
@@ -29,6 +32,10 @@ export default function storefront(props?: Partial<Options>): Plugin {
 
     if (viewsModule) {
       server.reloadModule(viewsModule);
+    }
+
+    if (featuresModule) {
+      server.reloadModule(featuresModule);
     }
   }
 
@@ -42,11 +49,13 @@ export default function storefront(props?: Partial<Options>): Plugin {
     resolveId(id) {
       if (id === '$components') return '\0$components';
       if (id === '$views') return '\0$views';
+      if (id === '$features') return '\0$features';
     },
 
     load(id) {
       if (id === '\0$components') return loadComponentsModule(config, options);
       if (id === '\0$views') return loadViewsModule(config, options);
+      if (id === '\0$features') return loadFeaturesModule(config, options);
     },
 
     configureServer(server) {
@@ -60,6 +69,12 @@ export default function storefront(props?: Partial<Options>): Plugin {
       server.watcher.on('unlink', handler);
       server.watcher.on('addDir', handler);
       server.watcher.on('unlinkDir', handler);
+
+      server.watcher.on('change', (path: string) => {
+        if (path.endsWith('Features.php')) {
+          refreshDeclarations(config, options, server);
+        }
+      });
     },
   };
 }
