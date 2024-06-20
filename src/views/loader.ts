@@ -62,6 +62,8 @@ function buildViewsDeclarations(target: string) {
   lines.push(`  import { Component } from 'vue';`);
   lines.push(`  export const Views: Record<string, Component>;`);
   lines.push(`}`);
+  lines.push(``);
+  lines.push(`export {};`);
 
   fs.writeFileSync(declarations, lines.join('\n'));
 }
