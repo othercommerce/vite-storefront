@@ -20,11 +20,10 @@ export default function storefront(props?: Partial<Options>): Plugin {
   function refreshDeclarations(config: ResolvedConfig, options: Options, server: ViteDevServer) {
     loadComponentsModule(config, options, false);
     loadViewsModule(config, options, false);
-    loadFeaturesModule(config, options, false);
 
     const componentsModule = server.moduleGraph.getModuleById('\0$components');
     const viewsModule = server.moduleGraph.getModuleById('\0$views');
-    const featuresModule = server.moduleGraph.getModuleById('\0$features');
+
 
     if (componentsModule) {
       server.reloadModule(componentsModule);
@@ -32,10 +31,6 @@ export default function storefront(props?: Partial<Options>): Plugin {
 
     if (viewsModule) {
       server.reloadModule(viewsModule);
-    }
-
-    if (featuresModule) {
-      server.reloadModule(featuresModule);
     }
   }
 
@@ -72,7 +67,13 @@ export default function storefront(props?: Partial<Options>): Plugin {
 
       server.watcher.on('change', (path: string) => {
         if (path.endsWith('Features.php')) {
-          refreshDeclarations(config, options, server);
+          loadFeaturesModule(config, options, false);
+
+          const featuresModule = server.moduleGraph.getModuleById('\0$features');
+
+          if (featuresModule) {
+            server.reloadModule(featuresModule);
+          }
         }
       });
     },
