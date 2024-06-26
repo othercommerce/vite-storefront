@@ -8,8 +8,8 @@ export type Options = {
 }
 
 const defaults: Options = {
-  local: 'resources/js/web/src',
-  vendor: 'vendor/procommerce/framework/packages/storefront/src',
+  local: 'resources/js/web',
+  vendor: 'vendor/procommerce/framework/packages/storefront',
 };
 
 export default function storefront(props?: Partial<Options>): Plugin {

@@ -52,7 +52,7 @@ export function loadViewsModule(config: ResolvedConfig, options: Options, compil
 }
 
 function buildViewsDeclarations(target: string) {
-  let directory = path.resolve(target, 'Types');
+  let directory = path.resolve(target, 'types', 'generated');
   let declarations = path.resolve(directory, 'views.d.ts');
   let lines = [];
 

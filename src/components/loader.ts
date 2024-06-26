@@ -93,7 +93,7 @@ function buildComponentsModule(views: ComponentsMap) {
 }
 
 function buildComponentsDeclarations(target: string, views: ComponentsMap) {
-  let directory = path.resolve(target, 'Types');
+  let directory = path.resolve(target, 'types', 'generated');
   let declarations = path.resolve(directory, 'components.d.ts');
   let lines = [];
 
@@ -112,7 +112,7 @@ function buildComponentsDeclarations(target: string, views: ComponentsMap) {
 }
 
 function buildVueDeclarations(target: string, views: ComponentsMap) {
-  let directory = path.resolve(target, 'Types');
+  let directory = path.resolve(target, 'types', 'generated');
   let declarations = path.resolve(directory, 'vue.d.ts');
   let lines = [];
 
