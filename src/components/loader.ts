@@ -45,8 +45,8 @@ function collectComponents(config: ResolvedConfig, options: Options) {
 }
 
 function resolveComponents(config: ResolvedConfig, options: Options, views: ComponentsMap, vendors: ComponentsMap, subdirectory: string) {
-  let local = path.resolve(config.root, options.local, subdirectory);
-  let vendor = path.resolve(config.root, options.vendor, subdirectory);
+  let local = path.resolve(config.root, options.local, 'src', subdirectory);
+  let vendor = path.resolve(config.root, options.vendor, 'src', subdirectory);
 
   if (fs.existsSync(vendor)) {
     scan(vendor).forEach((path) => {

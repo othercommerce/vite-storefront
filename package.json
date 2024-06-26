@@ -2,7 +2,7 @@
   "name": "@othercommerce/vite-storefront",
   "description": "This plugin handles internal Vue components auto-registration in OtherCommerce storefronts.",
   "keywords": ["othercommerce", "vite", "vue"],
-  "version": "0.1.12",
+  "version": "0.1.13",
   "license": "MIT",
   "homepage": "https://github.com/othercommerce/vite-storefront",
   "repository": {

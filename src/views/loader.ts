@@ -12,8 +12,8 @@ type View = {
 }
 
 export function loadViewsModule(config: ResolvedConfig, options: Options, compile: boolean = true) {
-  let local = path.resolve(config.root, options.local, 'Views');
-  let vendor = path.resolve(config.root, options.vendor, 'Views');
+  let local = path.resolve(config.root, options.local, 'src', 'Views');
+  let vendor = path.resolve(config.root, options.vendor, 'src', 'Views');
 
   let views: Map<string, View> = new Map;
   let lines: string[] = [];
