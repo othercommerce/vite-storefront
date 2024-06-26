@@ -1,7 +1,6 @@
 import type { Plugin, ResolvedConfig, ViteDevServer } from 'vite';
 import { loadViewsModule } from './views/loader';
 import { loadComponentsModule } from './components/loader';
-import { loadFeaturesModule } from './features/loader';
 
 export type Options = {
   local: string;
@@ -44,13 +43,11 @@ export default function storefront(props?: Partial<Options>): Plugin {
     resolveId(id) {
       if (id === '$components') return '\0$components';
       if (id === '$views') return '\0$views';
-      if (id === '$features') return '\0$features';
     },
 
     load(id) {
       if (id === '\0$components') return loadComponentsModule(config, options);
       if (id === '\0$views') return loadViewsModule(config, options);
-      if (id === '\0$features') return loadFeaturesModule(config, options);
     },
 
     configureServer(server) {
@@ -64,18 +61,6 @@ export default function storefront(props?: Partial<Options>): Plugin {
       server.watcher.on('unlink', handler);
       server.watcher.on('addDir', handler);
       server.watcher.on('unlinkDir', handler);
-
-      server.watcher.on('change', (path: string) => {
-        if (path.endsWith('Features.php')) {
-          loadFeaturesModule(config, options, false);
-
-          const featuresModule = server.moduleGraph.getModuleById('\0$features');
-
-          if (featuresModule) {
-            server.reloadModule(featuresModule);
-          }
-        }
-      });
     },
   };
 }
